@@ -35,7 +35,8 @@ LAST_GISTS = '\033[95m    LAST 5 EXPORTED GISTS: \n\033[0m'
 
 class PySession(object):
     save = True
-    save_locally = False
+    save_locally = True
+    save_gist = False
     is_ipython = False
     ipython_history = None
     start_index = 0
@@ -176,16 +177,17 @@ def before_exit():
         stdout.write(SUCCESS)
         return
 
-    try:
-        stdout.write(SAVING_GIST)
-        gist_response = PySession.save_to_gist('\n'.join(lines_of_code))
-        gist_url = gist_response['html_url']
-        PySession.save_gist_url(gist_url)
-        webbrowser.open_new_tab(gist_url)
-        stdout.write(SUCCESS)
-    except:
-        stdout.write(FAILED)
-        PySession.save_to_file('\n'.join(lines_of_code))
+    if PySession.save_gist:
+        try:
+            stdout.write(SAVING_GIST)
+            gist_response = PySession.save_to_gist('\n'.join(lines_of_code))
+            gist_url = gist_response['html_url']
+            PySession.save_gist_url(gist_url)
+            webbrowser.open_new_tab(gist_url)
+            stdout.write(SUCCESS)
+        except:
+            stdout.write(FAILED)
+            # PySession.save_to_file('\n'.join(lines_of_code))
 
 
 init()
